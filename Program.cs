@@ -7,73 +7,115 @@ namespace TP
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("¡Bienvenido al juego 'Quién es Quién' versión clásica!");
-            Console.WriteLine("Piensa en uno de los siguientes 8 personajes y yo intentaré adivinarlo:");
-            Console.WriteLine("- Alex");
-            Console.WriteLine("- Anita");
-            Console.WriteLine("- Bill");
-            Console.WriteLine("- Claire");
-            Console.WriteLine("- David");
-            Console.WriteLine("- Maria");
-            Console.WriteLine("- Susan");
-            Console.WriteLine("- Alfred");
-            Console.WriteLine("\nPresiona cualquier tecla para comenzar...");
-            Console.ReadKey();
-
-    
-            ArbolBinario<DecisionData> arbolPersonajes = CrearArbolWhoIsWho();
-
-       
-            JugarAdivinanza(arbolPersonajes);
-
-            Console.WriteLine("\n--- Demostración de métodos del árbol de decisiones ---");
-            Console.WriteLine("Ahora podemos ver cómo se estructuran las preguntas y predicciones.");
-
-        
-            Estrategia estrategiaDemo = new Estrategia(arbolPersonajes.getDatoRaiz());
-           
-
-            string opcion = "";
-            while (opcion != "4")
+            string opcionJuego = "";
+            while (opcionJuego != "3")
             {
-                Console.WriteLine("\nElige una opción para ver la estructura del árbol:");
-                Console.WriteLine("1. Ver todas las preguntas en orden de nivel (Consulta1)");
-                Console.WriteLine("2. Ver todos los posibles caminos hacia los personajes (Consulta2)");
-                Console.WriteLine("3. Ver el árbol por niveles (Consulta3)");
-                Console.WriteLine("4. Salir");
+               
+                Console.WriteLine("¡Bienvenido al juego de Adivinanza con Árboles de Decisión!");
+                Console.WriteLine("\nElige el tipo de juego:");
+                Console.WriteLine("1. Quién es Quién Clásico (Personajes clásicos)");
+                Console.WriteLine("2. Bonus Track: Superhéroes y Villanos");
+                Console.WriteLine("3. Salir del programa");
                 Console.Write("Tu opción: ");
-                opcion = Console.ReadLine();
+                opcionJuego = Console.ReadLine();
 
-                switch (opcion)
+                ArbolBinario<DecisionData> arbolSeleccionado = null;
+                string tituloJuego = "";
+                List<string> personajesDisponibles = new List<string>();
+                bool esJuegoClasico = false; 
+
+                switch (opcionJuego)
                 {
                     case "1":
-                        Console.WriteLine("\n--- Preguntas en orden de recorrido (BFS/por niveles) ---");
-                        Console.WriteLine(estrategiaDemo.Consulta1(arbolPersonajes));
+                        tituloJuego = "Quién es Quién Clásico";
+                        personajesDisponibles = new List<string> { "Alex", "Anita", "Bill", "Claire", "David", "Maria", "Susan", "Alfred" };
+                        arbolSeleccionado = CrearArbolWhoIsWho();
+                        esJuegoClasico = true; 
                         break;
                     case "2":
-                        Console.WriteLine("\n--- Todos los posibles caminos hacia los personajes (ramas del árbol) ---");
-                        Console.WriteLine(estrategiaDemo.Consulta2(arbolPersonajes));
+                        tituloJuego = "Bonus Track: Superhéroes y Villanos";
+                        personajesDisponibles = new List<string> { "Superman", "Batman", "Wonder Woman", "Spiderman", "Wolverine", "Capitán América", "Joker", "Duende Verde" };
+                        arbolSeleccionado = CrearArbolSuperheroes();
+                        esJuegoClasico = false; 
                         break;
                     case "3":
-                        Console.WriteLine("\n--- Estructura del árbol por niveles ---");
-                        Console.WriteLine(estrategiaDemo.Consulta3(arbolPersonajes));
-                        break;
-                    case "4":
-                        Console.WriteLine("Saliendo de la demostración.");
-                        break;
+                        Console.WriteLine("Saliendo del programa. ¡Hasta luego!");
+                        return; 
                     default:
-                        Console.WriteLine("Opción inválida. Por favor, elige un número del 1 al 4.");
-                        break;
+                        Console.WriteLine("Opción inválida. Por favor, elige 1, 2 o 3.");
+                        Console.ReadKey();
+                        continue; 
                 }
+
+                Console.Clear();
+                Console.WriteLine($"¡Bienvenido al juego '{tituloJuego}'!");
+                Console.WriteLine("Piensa en uno de los siguientes 8 personajes y yo intentaré adivinarlo:");
+                foreach (string personaje in personajesDisponibles)
+                {
+                    Console.WriteLine($"- {personaje}");
+                }
+                Console.WriteLine("\nPresiona cualquier tecla para comenzar la adivinanza...");
+                Console.ReadKey();
+
+                JugarAdivinanza(arbolSeleccionado);
+
+                if (esJuegoClasico) 
+                {
+                    Console.WriteLine("\n--- Demostración de métodos del árbol de decisiones ---");
+                    Console.WriteLine("Ahora podemos ver cómo se estructuran las preguntas y predicciones para el juego clásico.");
+
+                    Estrategia estrategiaDemo = new Estrategia(arbolSeleccionado.getDatoRaiz());
+
+                    string opcionConsulta = "";
+                    while (opcionConsulta != "4")
+                    {
+                        Console.WriteLine("\nElige una opción para ver la estructura del árbol:");
+                        Console.WriteLine("1. Ver todas las preguntas en orden de nivel (Consulta1)");
+                        Console.WriteLine("2. Ver todos los posibles caminos hacia los personajes (Consulta2)");
+                        Console.WriteLine("3. Ver el árbol por niveles (Consulta3)");
+                        Console.WriteLine("4. Volver al menú principal");
+                        Console.Write("Tu opción: ");
+                        opcionConsulta = Console.ReadLine();
+
+                        switch (opcionConsulta)
+                        {
+                            case "1":
+                                Console.WriteLine("\n--- Preguntas en orden de recorrido (BFS/por niveles) ---");
+                                Console.WriteLine(estrategiaDemo.Consulta1(arbolSeleccionado));
+                                break;
+                            case "2":
+                                Console.WriteLine("\n--- Todos los posibles caminos hacia los personajes (ramas del árbol) ---");
+                                Console.WriteLine(estrategiaDemo.Consulta2(arbolSeleccionado));
+                                break;
+                            case "3":
+                                Console.WriteLine("\n--- Estructura del árbol por niveles ---");
+                                Console.WriteLine(estrategiaDemo.Consulta3(arbolSeleccionado));
+                                break;
+                            case "4":
+                                Console.WriteLine("Volviendo al menú principal.");
+                                break;
+                            default:
+                                Console.WriteLine("Opción inválida. Por favor, elige un número del 1 al 4.");
+                                break;
+                        }
+                        if (opcionConsulta != "4")
+                        {
+                            Console.WriteLine("\nPresiona cualquier tecla para continuar...");
+                            Console.ReadKey();
+                        }
+                    }
+                }
+                else 
+                {
+                    Console.WriteLine("\nJuego de Superhéroes y Villanos terminado. Volviendo al menú principal.");
+                    Console.WriteLine("Presiona cualquier tecla para continuar...");
+                    Console.ReadKey();
+                }
+                
             }
-
-            Console.WriteLine("\n¡Gracias por jugar!");
-            Console.ReadKey();
         }
-
         public static ArbolBinario<DecisionData> CrearArbolWhoIsWho()
         {
-            
             DecisionData alex = new DecisionData(new Dictionary<string, int> { { "Alex", 1 } });
             DecisionData anita = new DecisionData(new Dictionary<string, int> { { "Anita", 1 } });
             DecisionData bill = new DecisionData(new Dictionary<string, int> { { "Bill", 1 } });
@@ -104,18 +146,16 @@ namespace TP
             nodoTieneBigoteHombre.agregarHijoDerecho(new ArbolBinario<DecisionData>(bill));
 
 
-        
             ArbolBinario<DecisionData> nodoNoTieneBigote = new ArbolBinario<DecisionData>(new DecisionData(usaSombrero));
             nodoEsHombre.agregarHijoDerecho(nodoNoTieneBigote);
 
-     
             nodoNoTieneBigote.agregarHijoIzquierdo(new ArbolBinario<DecisionData>(david));
 
             ArbolBinario<DecisionData> nodoNoUsaSombrero = new ArbolBinario<DecisionData>(new DecisionData(tieneLentes));
             nodoNoTieneBigote.agregarHijoDerecho(nodoNoUsaSombrero);
 
-         
             nodoNoUsaSombrero.agregarHijoIzquierdo(new ArbolBinario<DecisionData>(alex));
+
 
             ArbolBinario<DecisionData> nodoEsMujer = new ArbolBinario<DecisionData>(new DecisionData(tienePeloRubio));
             arbolRaiz.agregarHijoDerecho(nodoEsMujer);
@@ -126,7 +166,6 @@ namespace TP
             ArbolBinario<DecisionData> nodoNoPeloRubio = new ArbolBinario<DecisionData>(new DecisionData(tieneLentes));
             nodoEsMujer.agregarHijoDerecho(nodoNoPeloRubio);
 
-      
             nodoNoPeloRubio.agregarHijoIzquierdo(new ArbolBinario<DecisionData>(susan));
 
             ArbolBinario<DecisionData> nodoNoLentesMujer = new ArbolBinario<DecisionData>(new DecisionData(tienePeloNegro));
@@ -138,7 +177,59 @@ namespace TP
 
             return arbolRaiz;
         }
-         public static void JugarAdivinanza(ArbolBinario<DecisionData> arbol)
+        public static ArbolBinario<DecisionData> CrearArbolSuperheroes()
+        {
+            DecisionData superman = new DecisionData(new Dictionary<string, int> { { "Superman", 1 } });
+            DecisionData batman = new DecisionData(new Dictionary<string, int> { { "Batman", 1 } });
+            DecisionData wonderWoman = new DecisionData(new Dictionary<string, int> { { "Wonder Woman", 1 } });
+            DecisionData spiderman = new DecisionData(new Dictionary<string, int> { { "Spiderman", 1 } });
+            DecisionData wolverine = new DecisionData(new Dictionary<string, int> { { "Wolverine", 1 } });
+            DecisionData capitanAmerica = new DecisionData(new Dictionary<string, int> { { "Capitán América", 1 } });
+            DecisionData joker = new DecisionData(new Dictionary<string, int> { { "Joker", 1 } });
+            DecisionData duendeVerde = new DecisionData(new Dictionary<string, int> { { "Duende Verde", 1 } });
+
+            Pregunta esVillano = new Pregunta("¿Es un villano?");
+            Pregunta usaCapa = new Pregunta("¿Usa capa?");
+            Pregunta vuela = new Pregunta("¿Vuela?");
+            Pregunta esMujer = new Pregunta("¿Es una mujer?");
+            Pregunta usaEscudo = new Pregunta("¿Usa escudo?");
+            Pregunta tieneGarras = new Pregunta("¿Tiene garras?");
+            Pregunta usaMaquillajePayaso = new Pregunta("¿Usa maquillaje de payaso?");
+
+            ArbolBinario<DecisionData> arbolRaiz = new ArbolBinario<DecisionData>(new DecisionData(esVillano));
+
+            ArbolBinario<DecisionData> nodoEsVillano = new ArbolBinario<DecisionData>(new DecisionData(usaMaquillajePayaso));
+            arbolRaiz.agregarHijoIzquierdo(nodoEsVillano);
+
+            nodoEsVillano.agregarHijoIzquierdo(new ArbolBinario<DecisionData>(joker));
+            nodoEsVillano.agregarHijoDerecho(new ArbolBinario<DecisionData>(duendeVerde));
+
+            ArbolBinario<DecisionData> nodoEsHeroe = new ArbolBinario<DecisionData>(new DecisionData(usaCapa));
+            arbolRaiz.agregarHijoDerecho(nodoEsHeroe);
+
+            ArbolBinario<DecisionData> nodoUsaCapaHeroe = new ArbolBinario<DecisionData>(new DecisionData(vuela));
+            nodoEsHeroe.agregarHijoIzquierdo(nodoUsaCapaHeroe);
+
+            nodoUsaCapaHeroe.agregarHijoIzquierdo(new ArbolBinario<DecisionData>(superman));
+            nodoUsaCapaHeroe.agregarHijoDerecho(new ArbolBinario<DecisionData>(batman));
+
+            ArbolBinario<DecisionData> nodoNoUsaCapaHeroe = new ArbolBinario<DecisionData>(new DecisionData(esMujer));
+            nodoEsHeroe.agregarHijoDerecho(nodoNoUsaCapaHeroe);
+
+            nodoNoUsaCapaHeroe.agregarHijoIzquierdo(new ArbolBinario<DecisionData>(wonderWoman));
+            ArbolBinario<DecisionData> nodoHombreSinCapa = new ArbolBinario<DecisionData>(new DecisionData(usaEscudo));
+            nodoNoUsaCapaHeroe.agregarHijoDerecho(nodoHombreSinCapa);
+
+            nodoHombreSinCapa.agregarHijoIzquierdo(new ArbolBinario<DecisionData>(capitanAmerica));
+            ArbolBinario<DecisionData> nodoHombreSinCapaNiEscudo = new ArbolBinario<DecisionData>(new DecisionData(tieneGarras));
+            nodoHombreSinCapa.agregarHijoDerecho(nodoHombreSinCapaNiEscudo);
+
+            nodoHombreSinCapaNiEscudo.agregarHijoIzquierdo(new ArbolBinario<DecisionData>(wolverine));
+            nodoHombreSinCapaNiEscudo.agregarHijoDerecho(new ArbolBinario<DecisionData>(spiderman));
+
+            return arbolRaiz;
+        }
+        public static void JugarAdivinanza(ArbolBinario<DecisionData> arbol)
         {
             if (arbol == null || arbol.esVacio())
             {
